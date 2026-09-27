@@ -14,11 +14,18 @@ const app = express();
 const server = http.createServer(app);
 
 // CORS configuration for REST & WebSockets
-const allowedOrigin = process.env.CLIENT_URL || 'http://localhost:5173';
+const allowedOrigins = Array.from(
+  new Set([
+    process.env.CLIENT_URL,
+    'https://chatbot-1-u33a.onrender.com',
+    'http://localhost:5173',
+    'http://127.0.0.1:5173'
+  ].filter(Boolean))
+);
 
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
   })
@@ -39,7 +46,7 @@ app.use('/api/messages', messageRoutes);
 // Socket.io Server Setup
 const io = new Server(server, {
   cors: {
-    origin: allowedOrigin,
+    origin: allowedOrigins,
     methods: ['GET', 'POST'],
     credentials: true
   }
